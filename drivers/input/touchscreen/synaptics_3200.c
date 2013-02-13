@@ -163,7 +163,7 @@ int s2w_register_threshold = 9;
 int s2w_min_distance = 325;
 // use either direction for on/off
 int s2w_allow_stroke = 1;
-int s2w_switch = 0;
+int s2w_switch = 1;
 bool scr_suspended = false;
 bool exec_count = true;
 bool barrier = false;
@@ -991,7 +991,7 @@ static ssize_t syn_unlock_store(struct device *dev,
 {
 	struct synaptics_ts_data *ts;
 	int unlock = -1;
-	int ret = 0;
+	int ret;
 
 	ts = gl_ts;
 
@@ -1008,8 +1008,7 @@ static ssize_t syn_unlock_store(struct device *dev,
 				printk(KERN_INFO "[TP] %s: Disable P-sensor by Touch\n", __func__);
 				psensor_enable_by_touch_driver(0);
 				ts->psensor_resume_enable = 0;
-			}
-			else if(ts->psensor_resume_enable == 2) {
+			} else if(ts->psensor_resume_enable == 2) {
 				ts->psensor_resume_enable = 0;
 			}
 		}
@@ -3312,7 +3311,7 @@ static int synaptics_ts_remove(struct i2c_client *client)
 
 static int synaptics_ts_suspend(struct i2c_client *client, pm_message_t mesg)
 {
-	int ret = 0;
+	int ret;
 	struct synaptics_ts_data *ts = i2c_get_clientdata(client);
 	printk(KERN_INFO "[TP] %s: enter\n", __func__);
 
@@ -3536,6 +3535,7 @@ static int synaptics_ts_resume(struct i2c_client *client)
 		input_report_abs(ts->input_dev, ABS_MT_AMPLITUDE, 0);
 		input_report_abs(ts->input_dev, ABS_MT_POSITION, 1 << 31);
 	}
+
 	if(ts->psensor_detection) {
 		if(ts->psensor_status == 0) {
 			ts->psensor_resume_enable = 1;
@@ -3621,3 +3621,4 @@ module_exit(synaptics_ts_exit);
 
 MODULE_DESCRIPTION("Synaptics Touchscreen Driver");
 MODULE_LICENSE("GPL");
+
