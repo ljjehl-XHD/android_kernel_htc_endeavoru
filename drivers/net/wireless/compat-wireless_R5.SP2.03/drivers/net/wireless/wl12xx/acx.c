@@ -1878,3 +1878,53 @@ out:
 	kfree(stat_info);
 	return ret;
 }
+
+int wl1271_acx_ap_conn_estab_complete(struct wl1271 *wl)
+{
+	struct acx_header_only_cfg *acx;
+	int ret;
+
+	wl1271_debug(DEBUG_ACX, "Sending AP Connection Establishment complete indication");
+
+	acx = kzalloc(sizeof(*acx), GFP_KERNEL);
+	if (!acx)
+		return -ENOMEM;
+
+	ret = wl1271_cmd_configure(wl, ACX_AP_CONN_ESTAB_COMPLETE,
+				   acx, sizeof(*acx));
+	if (ret < 0)
+		wl1271_warning("failed to send Connection Establishment complete indication: %d", ret);
+
+	kfree(acx);
+	return ret;
+}
+
+/* When the host enter to suspend (or resumes), we don't want to get any
+* fast link notifications, there for we will configure the FW to disable those
+* notifications (and configure back to enable on resume)
+*/
+int wl12xx_acx_rx_ba_filter(struct wl1271 *wl,
+			    bool action)
+{
+	struct wl12xx_acx_rx_ba_filter *acx;
+	int ret = 0;
+
+	acx = kzalloc(sizeof(*acx), GFP_KERNEL);
+	if (!acx) {
+		ret = -ENOMEM;
+		goto out;
+	}
+
+	acx->enable = (u32)action;
+	ret = wl1271_cmd_configure(wl, ACX_RX_BA_FILTER, acx, sizeof(*acx));
+	if (ret < 0) {
+		wl1271_warning("acx rx ba activity filter setting failed: %d", ret);
+		goto out;
+	}
+
+	out:
+	kfree(acx);
+	return ret;
+}
+
+
