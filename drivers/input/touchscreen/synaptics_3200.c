@@ -165,7 +165,7 @@ static unsigned int s2w_min_distance = 325;
 static bool s2w_allow_stroke = true;
 
 // double tap to wake
-static bool s2w_allow_double_tap = false;
+static bool s2w_allow_double_tap = true;
 // minimal duration between taps to be recognized
 static unsigned int s2w_double_tap_duration = 150; /* msecs */
 // maximal duration between taps to be recognized
